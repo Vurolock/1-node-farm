@@ -58,20 +58,22 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-	const pathName = req.url;
+	const { query, pathname } = url.parse(req.url, true);
 
-	switch (pathName) {
+	switch (pathname) {
 		case '/':
 		case '/overview':
 			const cardsHtml = dataObj.map(card => replaceTemplate(cardTemplate, card)).join('');
-			const output = overviewTemplate.replace('%productCards%', cardsHtml);
+			const overviewHtml = overviewTemplate.replace('%productCards%', cardsHtml);
 			res.writeHead(200, {ContentType: 'text/html'});
-			res.end(output);
+			res.end(overviewHtml);
 			break;
 
 		case '/product':
+			const product = dataObj[query.id];
+			const productHtml = replaceTemplate(productTemplate, product);
 			res.writeHead(200, {ContentType: 'text/html'});
-			res.end(productTemplate);
+			res.end(productHtml);
 			break;
 
 		case '/api':
