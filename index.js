@@ -31,8 +31,12 @@ const url = require('url');
 /////////////////////////////
 // SERVER
 
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data) => {
-});
+const overviewTemplate = fs.readFileSync(`${__dirname}/templates/overview.html`, 'utf-8');
+const productTemplate = fs.readFileSync(`${__dirname}/templates/product.html`, 'utf-8');
+const cardTemplate = fs.readFileSync(`${__dirname}/templates/card.html`, 'utf-8');
+
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
@@ -41,7 +45,8 @@ const server = http.createServer((req, res) => {
 	switch (pathName) {
 		case '/':
 		case '/overview':
-			res.end('This is the OVERVIEW');
+			res.writeHead(200, {ContentType: 'text/html'});
+			res.end(overviewTemplate);
 			break;
 
 		case '/product':
