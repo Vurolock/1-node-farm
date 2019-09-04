@@ -31,6 +31,24 @@ const url = require('url');
 /////////////////////////////
 // SERVER
 
+const replaceTemplate = (template, product) => {
+	let output = template
+								.replace(/%productName%/g, product.productName)
+								.replace(/%image%/g, product.image)
+								.replace(/%price%/g, product.price)
+								.replace(/%from%/g, product.from)
+								.replace(/%nutrients%/g, product.nutrients)
+								.replace(/%quantity%/g, product.quantity)
+								.replace(/%description%/g, product.description)
+								.replace(/%id%/g, product.id)
+								.replace(/%productName%/g, product.productName);
+
+	if (!product.organic) {
+		output = output.replace(/%notOrganic%/g, 'not-organic');
+	}
+	return output;
+}
+
 const overviewTemplate = fs.readFileSync(`${__dirname}/templates/overview.html`, 'utf-8');
 const productTemplate = fs.readFileSync(`${__dirname}/templates/product.html`, 'utf-8');
 const cardTemplate = fs.readFileSync(`${__dirname}/templates/card.html`, 'utf-8');
@@ -45,12 +63,15 @@ const server = http.createServer((req, res) => {
 	switch (pathName) {
 		case '/':
 		case '/overview':
+			const cardsHtml = dataObj.map(card => replaceTemplate(cardTemplate, card)).join('');
+			const output = overviewTemplate.replace('%productCards%', cardsHtml);
 			res.writeHead(200, {ContentType: 'text/html'});
-			res.end(overviewTemplate);
+			res.end(output);
 			break;
 
 		case '/product':
-			res.end('This is the PRODUCT');
+			res.writeHead(200, {ContentType: 'text/html'});
+			res.end(productTemplate);
 			break;
 
 		case '/api':
